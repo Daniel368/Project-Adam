@@ -2,8 +2,8 @@
 
 import math
 
-from src.adam.chemistry.molecule import Molecule
-from src.adam.chemistry.exceptions import (
+from adam.chemistry.molecule import Molecule
+from adam.chemistry.exceptions import (
     InvalidQuantityError,
     InsufficientQuantityError,
 )
@@ -59,10 +59,17 @@ class ChemicalInventory:
         Raises
         ------
         InvalidQuantityError
-            If ``amount`` is negative.
+            If ``amount`` is Boolean, non-numeric, non-finite, or negative.
         """
-        if amount < 0:
-            raise InvalidQuantityError("Amount must not be negative.")
+        if (
+            isinstance(amount, bool)
+            or not isinstance(amount, (int, float))
+            or not math.isfinite(amount)
+            or amount < 0
+        ):
+            raise InvalidQuantityError(
+                "Amount must be a finite, non-negative number."
+            )
 
         current_amount = self.get_quantity(molecule)
         self._quantities[molecule] = current_amount + amount
@@ -83,13 +90,20 @@ class ChemicalInventory:
         Raises
         ------
         InvalidQuantityError
-            If ``amount`` is negative.
+            If ``amount`` is Boolean, non-numeric, non-finite, or negative.
         InsufficientQuantityError
             If ``amount`` exceeds the available quantity beyond the floating-
             point tolerance.
         """
-        if amount < 0:
-            raise InvalidQuantityError("Amount cannot be negative.")
+        if (
+            isinstance(amount, bool)
+            or not isinstance(amount, (int, float))
+            or not math.isfinite(amount)
+            or amount < 0
+        ):
+            raise InvalidQuantityError(
+                "Amount must be a finite, non-negative number."
+            )
 
         current_quantity = self.get_quantity(molecule)
 
@@ -128,10 +142,17 @@ class ChemicalInventory:
         Raises
         ------
         InvalidQuantityError
-            If ``amount`` is negative.
+            If ``amount`` is Boolean, non-numeric, non-finite, or negative.
         """
-        if amount < 0:
-            raise InvalidQuantityError("Amount must not be negative.")
+        if (
+            isinstance(amount, bool)
+            or not isinstance(amount, (int, float))
+            or not math.isfinite(amount)
+            or amount < 0
+        ):
+            raise InvalidQuantityError(
+                "Amount must be a finite, non-negative number."
+            )
 
         return self.get_quantity(molecule) >= amount
 

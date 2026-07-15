@@ -2,10 +2,10 @@
 
 import pytest
 
-from src.adam.chemistry.compartment import Compartment
-from src.adam.chemistry.molecule import Molecule
-from src.adam.chemistry.reaction import Reaction
-from src.adam.chemistry.exceptions import (
+from adam.chemistry.compartment import Compartment
+from adam.chemistry.molecule import Molecule
+from adam.chemistry.reaction import Reaction
+from adam.chemistry.exceptions import (
     InvalidQuantityError,
     InvalidReactionError,
     InsufficientQuantityError,
@@ -365,3 +365,37 @@ def test_returned_product_mapping_is_read_only():
 
     with pytest.raises(TypeError):
         reaction.products[water] = 100.0
+
+
+@pytest.mark.parametrize("invalid_coefficient", [float("nan"), float("inf"), float("-inf"), True, False])
+def test_reaction_rejects_non_finite_coefficients_and_booleans(invalid_coefficient):
+    """Reaction coefficients reject non-finite values and Boolean values."""
+    hydrogen = Molecule("Hydrogen", "H2")
+    water = Molecule("Water", "H2O")
+
+    with pytest.raises(InvalidReactionError):
+        Reaction(
+            name="Invalid reaction",
+            reactants={hydrogen: invalid_coefficient},
+            products={water: 1.0},
+        )
+
+
+@pytest.mark.parametrize("invalid_extent", [float("nan"), float("inf"), float("-inf"), True, False])
+def test_reaction_rejects_non_finite_extents_and_booleans(invalid_extent):
+    """Reaction extents reject non-finite values and Boolean values."""
+    hydrogen = Molecule("Hydrogen", "H2")
+    water = Molecule("Water", "H2O")
+    reaction = Reaction(
+        name="Water formation",
+        reactants={hydrogen: 1.0},
+        products={water: 1.0},
+    )
+    compartment = Compartment("Reaction chamber", 10.0)
+    compartment.add(hydrogen, 10.0)
+
+    with pytest.raises(InvalidQuantityError):
+        reaction.execute(compartment, extent=invalid_extent)
+
+    assert compartment.get_quantity(hydrogen) == 10.0
+    assert compartment.get_quantity(water) == 0.0

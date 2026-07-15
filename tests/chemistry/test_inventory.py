@@ -2,9 +2,9 @@
 
 import pytest
 
-from src.adam.chemistry.inventory import ChemicalInventory
-from src.adam.chemistry.molecule import Molecule
-from src.adam.chemistry.exceptions import (
+from adam.chemistry.inventory import ChemicalInventory
+from adam.chemistry.molecule import Molecule
+from adam.chemistry.exceptions import (
     InvalidQuantityError,
     InsufficientQuantityError,
 )
@@ -166,3 +166,38 @@ def test_quantity_above_zero_tolerance_is_preserved():
     inventory.add(water, 1e-8)
 
     assert inventory.get_quantity(water) == pytest.approx(1e-8)
+
+
+@pytest.mark.parametrize("invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False])
+def test_add_rejects_non_finite_values_and_booleans(invalid_amount):
+    """Addition rejects non-finite numerical values and Boolean values."""
+    water = Molecule("Water", "H2O")
+    inventory = ChemicalInventory()
+
+    with pytest.raises(InvalidQuantityError):
+        inventory.add(water, invalid_amount)
+
+    assert inventory.get_quantity(water) == 0.0
+
+
+@pytest.mark.parametrize("invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False])
+def test_remove_rejects_non_finite_values_and_booleans(invalid_amount):
+    """Removal rejects non-finite numerical values and Boolean values."""
+    water = Molecule("Water", "H2O")
+    inventory = ChemicalInventory()
+    inventory.add(water, 10.0)
+
+    with pytest.raises(InvalidQuantityError):
+        inventory.remove(water, invalid_amount)
+
+    assert inventory.get_quantity(water) == 10.0
+
+
+@pytest.mark.parametrize("invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False])
+def test_contains_rejects_non_finite_values_and_booleans(invalid_amount):
+    """Containment checks reject non-finite values and Boolean values."""
+    water = Molecule("Water", "H2O")
+    inventory = ChemicalInventory()
+
+    with pytest.raises(InvalidQuantityError):
+        inventory.contains(water, invalid_amount)

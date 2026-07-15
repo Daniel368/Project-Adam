@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from src.adam.chemistry.exceptions import InvalidNameError
+from adam.chemistry.exceptions import InvalidNameError
 
 
 @dataclass(frozen=True)

@@ -3,8 +3,8 @@
 import pytest
 from dataclasses import FrozenInstanceError
 
-from src.adam.chemistry.molecule import Molecule
-from src.adam.chemistry.exceptions import InvalidNameError
+from adam.chemistry.molecule import Molecule
+from adam.chemistry.exceptions import InvalidNameError
 
 
 def test_name_is_stored():

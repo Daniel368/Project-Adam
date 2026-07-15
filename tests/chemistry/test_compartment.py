@@ -2,9 +2,9 @@
 
 import pytest
 
-from src.adam.chemistry.compartment import Compartment
-from src.adam.chemistry.molecule import Molecule
-from src.adam.chemistry.exceptions import (
+from adam.chemistry.compartment import Compartment
+from adam.chemistry.molecule import Molecule
+from adam.chemistry.exceptions import (
     ChemistryError,
     InvalidQuantityError,
     InvalidVolumeError,
@@ -149,3 +149,25 @@ def test_same_compartment_transfer_leaves_quantity_unchanged():
         compartment.transfer_to(compartment, water, 3.0)
 
     assert compartment.get_quantity(water) == pytest.approx(10.0)
+
+
+@pytest.mark.parametrize("invalid_volume", [float("nan"), float("inf"), float("-inf"), True, False])
+def test_volume_rejects_non_finite_values_and_booleans(invalid_volume):
+    """Compartment volume rejects non-finite values and Boolean values."""
+    with pytest.raises(InvalidVolumeError):
+        Compartment("Cytoplasm", invalid_volume)
+
+
+@pytest.mark.parametrize("invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False])
+def test_transfer_rejects_non_finite_values_and_booleans(invalid_amount):
+    """Transfers reject non-finite numerical values and Boolean values."""
+    water = Molecule("Water", "H2O")
+    source = Compartment("Source", 10.0)
+    destination = Compartment("Destination", 10.0)
+    source.add(water, 10.0)
+
+    with pytest.raises(InvalidQuantityError):
+        source.transfer_to(destination, water, invalid_amount)
+
+    assert source.get_quantity(water) == 10.0
+    assert destination.get_quantity(water) == 0.0

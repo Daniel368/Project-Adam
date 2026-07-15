@@ -1,10 +1,12 @@
 """Define and execute fixed stoichiometric reactions."""
 
 from types import MappingProxyType
+from collections.abc import Mapping
+import math
 
-from src.adam.chemistry.compartment import Compartment
-from src.adam.chemistry.molecule import Molecule
-from src.adam.chemistry.exceptions import (
+from adam.chemistry.compartment import Compartment
+from adam.chemistry.molecule import Molecule
+from adam.chemistry.exceptions import (
     InvalidReactionError,
     InvalidQuantityError,
     InsufficientQuantityError,
@@ -43,12 +45,14 @@ class Reaction:
     -----
     Input mappings are defensively copied and then exposed through read-only
     proxies. Zero extent is allowed and performs no changes; negative extent
-    is rejected.
+    is rejected. Quantities are consumed and produced exactly according to the
+    declared stoichiometric coefficients. The engine does not yet verify
+    elemental or mass conservation.
     """
 
     def __init__(
-        self, name: str, reactants: MappingProxyType, products: MappingProxyType
-    ):
+        self, name: str, reactants: Mapping[Molecule, float], products: Mapping[Molecule, float]
+    ) -> None:
         self._validate_name(name)
         self._validate_mapping(reactants, "reactants")
         self._validate_mapping(products, "products")
@@ -62,7 +66,7 @@ class Reaction:
         self._products = MappingProxyType(products_copy)
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the reaction name.
 
         Returns
@@ -73,7 +77,7 @@ class Reaction:
         return self._name
 
     @property
-    def reactants(self):
+    def reactants(self) -> Mapping[Molecule, float]:
         """Return the read-only reactant mapping.
 
         Returns
@@ -84,7 +88,7 @@ class Reaction:
         return self._reactants
 
     @property
-    def products(self):
+    def products(self) -> Mapping[Molecule, float]:
         """Return the read-only product mapping.
 
         Returns
@@ -150,7 +154,7 @@ class Reaction:
 
         return True
 
-    def execute(self, compartment: Compartment, extent=1.0) -> None:
+    def execute(self, compartment: Compartment, extent: float = 1.0) -> None:
         """Execute the reaction within a compartment.
 
         All required quantities are calculated and validated before any state
@@ -161,7 +165,7 @@ class Reaction:
         ----------
         compartment : Compartment
             Compartment whose inventory will be modified.
-        extent : float, optional
+        extent : float
             Non-negative number of reaction units to execute, by default
             ``1.0``.
 
@@ -261,7 +265,7 @@ class Reaction:
             )
 
     @staticmethod
-    def _validate_mapping(mapping: dict, mapping_name: str) -> None:
+    def _validate_mapping(mapping: Mapping[Molecule, float], mapping_name: str) -> None:
         """Validate a reactant or product coefficient mapping.
 
         Parameters
@@ -275,9 +279,9 @@ class Reaction:
         ------
         InvalidReactionError
             If the mapping is not a non-empty dictionary or contains a
-            non-numeric, Boolean, zero, or negative coefficient.
+            non-numeric, Boolean, non-finite, zero, or negative coefficient.
         """
-        if not isinstance(mapping, dict):
+        if not isinstance(mapping, Mapping):
             raise InvalidReactionError(
                 f"{mapping_name.capitalize()} must be a dictionary"
             )
@@ -288,19 +292,15 @@ class Reaction:
             )
 
         for molecule, coefficient in mapping.items():
-            if isinstance(coefficient, bool):
+            if (
+                isinstance(coefficient, bool)
+                or not isinstance(coefficient, (int, float))
+                or not math.isfinite(coefficient)
+                or coefficient <= 0
+            ):
                 raise InvalidReactionError(
-                    f"Coefficient for {molecule} must be a number"
-                )
-
-            if not isinstance(coefficient, (int, float)):
-                raise InvalidReactionError(
-                    f"Coefficient for {molecule} must be a number"
-                )
-
-            if coefficient <= 0:
-                raise InvalidReactionError(
-                    f"Coefficient for {molecule} must be strictly positive"
+                    f"Coefficient for {molecule} must be a finite, "
+                    "strictly positive number"
                 )
 
     @staticmethod
@@ -315,13 +315,14 @@ class Reaction:
         Raises
         ------
         InvalidQuantityError
-            If ``extent`` is Boolean, non-numeric, or negative.
+            If ``extent`` is Boolean, non-numeric, non-finite, or negative.
         """
-        if isinstance(extent, bool):
-            raise InvalidQuantityError("Reaction extent must be a number")
-
-        if not isinstance(extent, (int, float)):
-            raise InvalidQuantityError("Reaction extent must be a number")
-
-        if extent < 0:
-            raise InvalidQuantityError("Reaction extent cannot be negative")
+        if (
+            isinstance(extent, bool)
+            or not isinstance(extent, (int, float))
+            or not math.isfinite(extent)
+            or extent < 0
+        ):
+            raise InvalidQuantityError(
+                "Reaction extent must be a finite, non-negative number"
+            )

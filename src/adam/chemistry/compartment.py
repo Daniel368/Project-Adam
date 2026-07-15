@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from src.adam.chemistry.inventory import ChemicalInventory
-from src.adam.chemistry.molecule import Molecule
-from src.adam.chemistry.exceptions import (
+import math
+
+from adam.chemistry.inventory import ChemicalInventory
+from adam.chemistry.molecule import Molecule
+from adam.chemistry.exceptions import (
     ChemistryError,
     InvalidNameError,
     InvalidVolumeError,
@@ -38,7 +40,7 @@ class Compartment:
     InvalidNameError
         If ``name`` is not a non-empty string.
     InvalidVolumeError
-        If ``volume`` is not strictly positive.
+        If ``volume`` is Boolean, non-numeric, non-finite, or not strictly positive.
     """
 
     def __init__(self, name: str, volume: float):
@@ -47,8 +49,15 @@ class Compartment:
                 "Compartment name must not be empty or whitespace-only."
             )
 
-        if volume <= 0:
-            raise InvalidVolumeError("Volume must be greater than zero.")
+        if (
+            isinstance(volume, bool)
+            or not isinstance(volume, (int, float))
+            or not math.isfinite(volume)
+            or volume <= 0
+        ):
+            raise InvalidVolumeError(
+                "Volume must be a finite number greater than zero."
+            )
 
         self.name = name
         self.volume = volume
@@ -97,7 +106,7 @@ class Compartment:
         Raises
         ------
         InvalidQuantityError
-            If ``amount`` is negative.
+            If ``amount`` is Boolean, non-numeric, non-finite, or negative.
         """
         self.inventory.add(molecule, amount)
 
@@ -114,7 +123,7 @@ class Compartment:
         Raises
         ------
         InvalidQuantityError
-            If ``amount`` is negative.
+            If ``amount`` is Boolean, non-numeric, non-finite, or negative.
         InsufficientQuantityError
             If the compartment contains less than ``amount``.
         """
@@ -145,15 +154,22 @@ class Compartment:
         ChemistryError
             If ``destination`` is this compartment.
         InvalidQuantityError
-            If ``amount`` is negative.
+            If ``amount`` is Boolean, non-numeric, non-finite, or negative.
         InsufficientQuantityError
             If this compartment contains less than ``amount``.
         """
         if destination is self:
             raise ChemistryError("A compartment cannot transfer substance to itself.")
 
-        if amount < 0:
-            raise InvalidQuantityError("Transfer amount must not be negative.")
+        if (
+            isinstance(amount, bool)
+            or not isinstance(amount, (int, float))
+            or not math.isfinite(amount)
+            or amount < 0
+        ):
+            raise InvalidQuantityError(
+                "Transfer amount must be a finite, non-negative number."
+            )
 
         if self.get_quantity(molecule) < amount:
             raise InsufficientQuantityError(
