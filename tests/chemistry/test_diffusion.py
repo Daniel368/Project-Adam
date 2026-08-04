@@ -135,9 +135,7 @@ def test_does_not_overshoot_equilibrium(glucose: Molecule) -> None:
     diffusion.step(1000.0)
 
     assert a.get_concentration(glucose) >= b.get_concentration(glucose)
-    assert a.get_concentration(glucose) == pytest.approx(
-        b.get_concentration(glucose)
-    )
+    assert a.get_concentration(glucose) == pytest.approx(b.get_concentration(glucose))
 
 
 def test_large_step_reaches_equilibrium(glucose: Molecule) -> None:
@@ -160,9 +158,7 @@ def test_repeated_steps_approach_equilibrium(glucose: Molecule) -> None:
     for _ in range(20):
         diffusion.step(0.1)
 
-    final_difference = abs(
-        a.get_concentration(glucose) - b.get_concentration(glucose)
-    )
+    final_difference = abs(a.get_concentration(glucose) - b.get_concentration(glucose))
     assert final_difference < initial_difference
 
 

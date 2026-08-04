@@ -2,11 +2,11 @@
 
 import math
 
-from adam.chemistry.molecule import Molecule
 from adam.chemistry.exceptions import (
-    InvalidQuantityError,
     InsufficientQuantityError,
+    InvalidQuantityError,
 )
+from adam.chemistry.molecule import Molecule
 
 ZERO_TOLERANCE = 1e-12
 """float: Absolute tolerance used to normalise floating-point quantities."""
@@ -67,9 +67,7 @@ class ChemicalInventory:
             or not math.isfinite(amount)
             or amount < 0
         ):
-            raise InvalidQuantityError(
-                "Amount must be a finite, non-negative number."
-            )
+            raise InvalidQuantityError("Amount must be a finite, non-negative number.")
 
         current_amount = self.get_quantity(molecule)
         self._quantities[molecule] = current_amount + amount
@@ -101,9 +99,7 @@ class ChemicalInventory:
             or not math.isfinite(amount)
             or amount < 0
         ):
-            raise InvalidQuantityError(
-                "Amount must be a finite, non-negative number."
-            )
+            raise InvalidQuantityError("Amount must be a finite, non-negative number.")
 
         current_quantity = self.get_quantity(molecule)
 
@@ -150,9 +146,7 @@ class ChemicalInventory:
             or not math.isfinite(amount)
             or amount < 0
         ):
-            raise InvalidQuantityError(
-                "Amount must be a finite, non-negative number."
-            )
+            raise InvalidQuantityError("Amount must be a finite, non-negative number.")
 
         return self.get_quantity(molecule) >= amount
 

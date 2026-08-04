@@ -84,21 +84,15 @@ class PassiveDiffusion:
         volume_a = self.compartment_a.volume
         volume_b = self.compartment_b.volume
 
-        equilibrium_concentration = (
-            quantity_a + quantity_b
-        ) / (volume_a + volume_b)
+        equilibrium_concentration = (quantity_a + quantity_b) / (volume_a + volume_b)
 
         source_quantity = source.get_quantity(self.molecule)
-        maximum_transfer = (
-            source_quantity - equilibrium_concentration * source.volume
-        )
+        maximum_transfer = source_quantity - equilibrium_concentration * source.volume
 
         if maximum_transfer <= self._TOLERANCE:
             return
 
-        flux_magnitude = (
-            self.permeability * self.area * abs(difference)
-        )
+        flux_magnitude = self.permeability * self.area * abs(difference)
         requested_transfer = flux_magnitude * float(delta_time)
         actual_transfer = min(requested_transfer, maximum_transfer)
 

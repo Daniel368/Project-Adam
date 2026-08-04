@@ -1,7 +1,5 @@
-from adam.chemistry.compartment import Compartment
-from adam.chemistry.diffusion import PassiveDiffusion
-from adam.chemistry.molecule import Molecule
-from adam.simulation.engine import SimulationEngine
+from adam.chemistry import Compartment, Molecule, PassiveDiffusion
+from adam.simulation import SimulationEngine
 
 
 def print_state(

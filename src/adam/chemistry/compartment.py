@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import math
 
-from adam.chemistry.inventory import ChemicalInventory
-from adam.chemistry.molecule import Molecule
 from adam.chemistry.exceptions import (
     ChemistryError,
-    InvalidNameError,
-    InvalidVolumeError,
-    InvalidQuantityError,
     InsufficientQuantityError,
+    InvalidNameError,
+    InvalidQuantityError,
+    InvalidVolumeError,
 )
+from adam.chemistry.inventory import ChemicalInventory
+from adam.chemistry.molecule import Molecule
 
 
 class Compartment:

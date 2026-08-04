@@ -2,12 +2,12 @@
 
 import pytest
 
+from adam.chemistry.exceptions import (
+    InsufficientQuantityError,
+    InvalidQuantityError,
+)
 from adam.chemistry.inventory import ChemicalInventory
 from adam.chemistry.molecule import Molecule
-from adam.chemistry.exceptions import (
-    InvalidQuantityError,
-    InsufficientQuantityError,
-)
 
 
 def test_missing_molecules():
@@ -168,7 +168,9 @@ def test_quantity_above_zero_tolerance_is_preserved():
     assert inventory.get_quantity(water) == pytest.approx(1e-8)
 
 
-@pytest.mark.parametrize("invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False])
+@pytest.mark.parametrize(
+    "invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False]
+)
 def test_add_rejects_non_finite_values_and_booleans(invalid_amount):
     """Addition rejects non-finite numerical values and Boolean values."""
     water = Molecule("Water", "H2O")
@@ -180,7 +182,9 @@ def test_add_rejects_non_finite_values_and_booleans(invalid_amount):
     assert inventory.get_quantity(water) == 0.0
 
 
-@pytest.mark.parametrize("invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False])
+@pytest.mark.parametrize(
+    "invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False]
+)
 def test_remove_rejects_non_finite_values_and_booleans(invalid_amount):
     """Removal rejects non-finite numerical values and Boolean values."""
     water = Molecule("Water", "H2O")
@@ -193,7 +197,9 @@ def test_remove_rejects_non_finite_values_and_booleans(invalid_amount):
     assert inventory.get_quantity(water) == 10.0
 
 
-@pytest.mark.parametrize("invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False])
+@pytest.mark.parametrize(
+    "invalid_amount", [float("nan"), float("inf"), float("-inf"), True, False]
+)
 def test_contains_rejects_non_finite_values_and_booleans(invalid_amount):
     """Containment checks reject non-finite values and Boolean values."""
     water = Molecule("Water", "H2O")

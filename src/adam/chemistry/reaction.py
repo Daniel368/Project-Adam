@@ -1,16 +1,16 @@
 """Define and execute fixed stoichiometric reactions."""
 
-from types import MappingProxyType
-from collections.abc import Mapping
 import math
+from collections.abc import Mapping
+from types import MappingProxyType
 
 from adam.chemistry.compartment import Compartment
-from adam.chemistry.molecule import Molecule
 from adam.chemistry.exceptions import (
-    InvalidReactionError,
-    InvalidQuantityError,
     InsufficientQuantityError,
+    InvalidQuantityError,
+    InvalidReactionError,
 )
+from adam.chemistry.molecule import Molecule
 
 
 class Reaction:
@@ -51,7 +51,10 @@ class Reaction:
     """
 
     def __init__(
-        self, name: str, reactants: Mapping[Molecule, float], products: Mapping[Molecule, float]
+        self,
+        name: str,
+        reactants: Mapping[Molecule, float],
+        products: Mapping[Molecule, float],
     ) -> None:
         self._validate_name(name)
         self._validate_mapping(reactants, "reactants")

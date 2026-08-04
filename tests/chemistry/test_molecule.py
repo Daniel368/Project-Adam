@@ -1,10 +1,11 @@
 """Tests for immutable molecule value objects."""
 
-import pytest
 from dataclasses import FrozenInstanceError
 
-from adam.chemistry.molecule import Molecule
+import pytest
+
 from adam.chemistry.exceptions import InvalidNameError
+from adam.chemistry.molecule import Molecule
 
 
 def test_name_is_stored():
