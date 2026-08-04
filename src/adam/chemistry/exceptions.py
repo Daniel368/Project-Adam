@@ -23,3 +23,7 @@ class InvalidReactionError(ChemistryError):
 
 class InvalidNameError(ChemistryError):
     """Raised when a required name or symbol is invalid."""
+
+
+class InvalidDiffusionError(ChemistryError):
+    """Raised when passive diffusion configuration is invalid."""
