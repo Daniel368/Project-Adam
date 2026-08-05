@@ -1,9 +1,11 @@
 """Public interface for Adam's chemistry models."""
 
 from adam.chemistry.compartment import Compartment
+from adam.chemistry.diffusion import PassiveDiffusion
 from adam.chemistry.exceptions import (
     ChemistryError,
     InsufficientQuantityError,
+    InvalidDiffusionError,
     InvalidNameError,
     InvalidQuantityError,
     InvalidReactionError,
@@ -12,8 +14,6 @@ from adam.chemistry.exceptions import (
 from adam.chemistry.inventory import ChemicalInventory
 from adam.chemistry.molecule import Molecule
 from adam.chemistry.reaction import Reaction
-from adam.chemistry.diffusion import PassiveDiffusion
-from adam.chemistry.exceptions import InvalidDiffusionError
 
 __all__ = [
     "ChemicalInventory",
